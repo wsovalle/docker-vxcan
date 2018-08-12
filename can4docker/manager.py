@@ -70,6 +70,7 @@ class EndPoint(object):
 
     def create_resource(self):
         sh("ip link add {0} type vxcan peer name {0}p".format(self.if_name, self.peer_if_name))
+        sh("ip link set dev {0} alias 'CAN Bus for Docker EndPoint {1}'".format(self.if_name, self.endpoint_id))
         sh("ip link set {0} up".format(self.if_name))
 
     def delete_resource(self):
@@ -80,6 +81,7 @@ class EndPoint(object):
         self.peer_namespace = namespace
         sh("rm -f /var/run/netns/{0}".format(self.peer_namespace))
         sh("ln -s /var/run/docker/netns/{0} /var/run/netns/".format(self.peer_namespace))
+        sh("ip link set dev {0} alias 'CAN Bus for Docker Sandbox {1}'".format(self.peer_if_name, self.endpoint_id))
         sh("ip link set {0} netns {1}".format(self.peer_if_name, self.peer_namespace))
         sh("ip netns exec {0} ip link set {1} up".format(self.peer_namespace, self.peer_if_name))
         pass
@@ -103,6 +105,7 @@ class Network(object):
 
     def create_resource(self):
         sh("ip link add dev {0} type vcan".format(self.if_name))
+        sh("ip link set dev {0} alias 'CAN Bus for Docker Network {1}'".format(self.if_name, self.network_id))
         sh("ip link set {0} up".format(self.if_name))
 
     def delete_resource(self):
