@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Blah blah balh..."""
 
 import logging
 
@@ -9,7 +10,10 @@ LOGGER = logging.getLogger("__name__")
 
 
 class Gateway(object):
-    """Wrapper around the 'cangw' tool from Linux can-utils."""
+    """Wrapper around the 'cangw' tool from Linux can-utils.
+
+    
+    """
     
     def __init__(self):
         pass
@@ -24,4 +28,9 @@ class Gateway(object):
         utils.sh("cangw -L")
 
     def flush(self):
+        """Flush the cangw table.
+
+
+        .. warning:: This flushed the table **system-wide**.
+        """
         utils.sh("cangw -F")
