@@ -1,41 +1,10 @@
-#!/bin/sh
-#
-# Run the command given as argument inside an i386-linux-sdk container.
-# Take care of:
-#  - mapping user/group ID
-#  - make the user's home directory available seemlessly inside the container
-#  - map host network to container network
-#  - keep $PWD unchanged (assumes $PWD belongs to $HOME)
-#
-# Example:
-#  - ./ci_scripts/within_docker ls -l
-#       Will list current directory ($PWD inside a container is the same as
-#       inside the host)
-#  - ./ci_scripts/within_docker ./ci_scripts/run_x86_bat_tests.sh
-#       Will run all x86 BAT tests inside an SDK container
+#!/bin/bash
+# WARNING: make sure this is the same image as the one used in the pipeline
 
-# SDK image settings
-registry=thor.marine.net.int:5000
-image=christian.gagneraud/tui-python
-tag=latest
-name=$registry/$image:$tag
-volumes="-v /var/run/docker.sock:/var/run/docker.sock "
+set -euxo pipefail
 
-# If we're already inside a docker, then we need to import volumes from it
-if [ -f /.dockerenv ];
-then
-    volumes="$volumes --volumes-from=$(basename $(cat /proc/self/cpuset))"
-else
-    volumes="$volumes -v $HOME:$HOME"
-fi
-
-# Pull and run
-docker pull $name
 docker run -it --rm \
-       --net=host \
-       -u $(id -u):$(id -g) \
-       -e HOME=$HOME \
-       $volumes \
+       -v $PWD:$PWD \
        -w $PWD \
-       $name \
+       python:3.5 \
        $*
