@@ -11,4 +11,3 @@ LOGGER = logging.getLogger(__name__)
 def sh(command):
     LOGGER.debug("Shell command: {}".format(command))
     subprocess.check_call(shlex.split(command))
-

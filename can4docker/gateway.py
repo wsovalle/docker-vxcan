@@ -12,9 +12,9 @@ LOGGER = logging.getLogger("__name__")
 class Gateway(object):
     """Wrapper around the 'cangw' tool from Linux can-utils.
 
-    
+
     """
-    
+
     def __init__(self):
         pass
 

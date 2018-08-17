@@ -62,4 +62,3 @@ class NetworkManager(object):
 
     def detach_endpoint(self, network_id, endpoint_id):
         self.networks[network_id].detach_endpoint(endpoint_id)
-    

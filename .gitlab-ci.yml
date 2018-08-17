@@ -15,7 +15,7 @@ check_pep8:
 
 check_lint:
  stage: check
- script: make check_lint
+ script: make pip_check_lint
 
 check_complexity:
  stage: check

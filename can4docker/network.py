@@ -3,6 +3,7 @@
 from . import utils
 from .gateway import Gateway
 
+
 class Network(object):
 
     def __init__(self, network_id):
@@ -24,7 +25,7 @@ class Network(object):
 
     def remove_endpoint(self, endpoint_id):
         return self.endpoints.pop(endpoint_id)
-    
+
     def attach_endpoint(self, endpoint_id, namespace_id):
         endpoint = self.endpoints[endpoint_id]
         endpoint.attach(namespace_id)
@@ -40,4 +41,3 @@ class Network(object):
                 self.gateway.remove_rule(other.if_name, endpoint.if_name)
                 self.gateway.remove_rule(endpoint.if_name, other.if_name)
         endpoint.detach()
-        
