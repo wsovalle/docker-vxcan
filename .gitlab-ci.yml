@@ -37,12 +37,15 @@ build_package:
   paths:
    - dist/
 
-build_container:
+build_plugin:
  stage: build2
- script: make pip_build_container
+ script: make build_plugin
  dependencies:
   - build_package
-  - build_doc
+ artifacts:
+  name: Docker plugin
+  paths:
+   - _build/docker-plugin
 
 deploy_package_staging:
  stage: deploy
