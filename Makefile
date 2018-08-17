@@ -36,7 +36,7 @@ venv_check_pep8: FORCE
 	./scripts/within_venv -r checks \
 	make check-pep8
 
-ci_check_pep8: FORCE
+pip_check_pep8: FORCE
 	./scripts/with_pip -r checks \
 	make check_pep8
 
@@ -52,7 +52,7 @@ venv_check_lint: FORCE
 	./scripts/within_venv -r checks -r $(PROJECT) \
 	make check_lint
 
-ci_check_lint: FORCE
+pip_check_lint: FORCE
 	./scripts/with_pip -r checks -r $(PROJECT) \
 	make check_lint
 
@@ -67,7 +67,7 @@ venv_check_complexity:
 	./scripts/within_venv -r checks \
 	make check_complexity
 
-ci_check_complexity:
+pip_check_complexity:
 	./scripts/with_pip -r checks \
 	make check_complexity
 
