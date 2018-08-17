@@ -1,0 +1,48 @@
+#!/bin/bash
+# Wrapper script that run a command within virtualenv/pip
+
+set -euxo pipefail
+
+# Set PS1 before calling virtualenv as it is not set in non interactive shell
+# virtualenv modifies it, so it has to exist
+export PS1='#'
+VENV=venv.$$
+virtualenv -p python3 $VENV
+
+# Always cleanup venv, before we exit (inc. premature exit on error)
+function cleanup {
+    rm -Rf $VENV
+}
+trap cleanup EXIT
+
+# Activate virtual env on Linux/Windows
+case $(uname -a | tr '[A-Z]' '[a-z]') in
+    *linux*)
+	. $VENV/bin/activate
+	;;
+    *msys*)
+	. $VENV/Scripts/activate
+	;;
+    *)
+	echo "Platform not supported"
+	echo "The command 'uname -a' reports it as \"$(uname -a)\""
+	exit 1;
+esac
+
+# Install requirements
+python -m pip install --upgrade pip setuptools
+while [ $# -ge 2 ];
+do
+    if [ "$1" == "-r" ];
+    then
+        python -m pip install -r requirements/$2-pip.txt
+        shift
+        shift
+    else
+        break
+    fi
+done
+
+# Execute provided command line
+echo "Executing \"$*\"..."
+sh -c "$*"

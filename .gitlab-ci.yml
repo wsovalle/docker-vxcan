@@ -1,0 +1,50 @@
+stages:
+ - check
+ - build
+ - test
+ - deploy
+
+
+check_pep8:
+ stage: check
+ script: make check_pep8
+ artifacts:
+  - check_pep8.log
+
+check_lint:
+ stage: check
+ script: make check_lint
+ artifacts:
+  - check_lint.log
+
+check_complexity:
+ stage: check
+ script: make check_complexity
+ artifacts:
+  - check_complexity.log
+
+build_doc:
+ stage: build
+ script: make build_doc
+ artifacts:
+  - build_doc.logs
+
+build_package:
+ stage: build
+ script: make build_package
+ artifacts:
+  - build_package.logs
+
+build_container:
+ stage: build
+ script: make build_container
+ dependencies:
+  - build_package
+ artifacts:
+  - build_container.logs
+
+deploy_package_staging:
+ stage: deploy
+ script: make deploy_package_staging
+ dependencies:
+   - build_package
