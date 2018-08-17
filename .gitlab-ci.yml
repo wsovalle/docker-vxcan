@@ -11,7 +11,7 @@ stages:
 
 check_pep8:
  stage: check
- script: make check_pep8
+ script: make pip_check_pep8
 
 check_lint:
  stage: check
@@ -19,7 +19,7 @@ check_lint:
 
 check_complexity:
  stage: check
- script: make check_complexity
+ script: make pip_check_complexity
 
 build_doc:
  stage: build1
@@ -31,7 +31,7 @@ build_doc:
 
 build_package:
  stage: build1
- script: make build_package
+ script: make pip_build_package
  artifacts:
   name: Python package
   paths:
@@ -39,13 +39,13 @@ build_package:
 
 build_container:
  stage: build2
- script: make build_container
+ script: make pip_build_container
  dependencies:
   - build_package
   - build_doc
 
 deploy_package_staging:
  stage: deploy
- script: make deploy_package_staging
+ script: make pip_deploy_package_staging
  dependencies:
    - build_package

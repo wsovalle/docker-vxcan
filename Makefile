@@ -29,54 +29,74 @@ venv: FORCE
 ##
 ## pycodestyle
 ##
-check_pep8: FORCE
+check_pep8:
+	python -m pycodestyle --show-source --show-pep8 --statistics $(PROJECT) tests
+
+venv_check_pep8: FORCE
 	./scripts/within_venv -r checks \
 	make check-pep8
 
-check-pep8:
-	python -m pycodestyle --show-source --show-pep8 --statistics $(PROJECT) tests
+ci_check_pep8: FORCE
+	./scripts/with_pip -r checks \
+	make check_pep8
+
 
 ##
 ## pylint
 ##
 check_lint: FORCE
-	./scripts/within_venv -r checks -r $(PROJECT) \
-	make check-lint
-
-check-lint: FORCE
 	PYTHONPATH=$$PWD:$$PYTHONPATH \
 	pylint --errors-only --output-format parseable $(PROJECT) tests
+
+venv_check_lint: FORCE
+	./scripts/within_venv -r checks -r $(PROJECT) \
+	make check_lint
+
+ci_check_lint: FORCE
+	./scripts/with_pip -r checks -r $(PROJECT) \
+	make check_lint
 
 ##
 ## radon (currently there's no B in the code, so let's try to keep it this way)
 ##
 check_complexity:
-	./scripts/within_venv -r checks \
-	make _check_complexity
-
-_check_complexity:
 	radon cc --max $(MAX_COMPLEXITY) --show-complexity --average $(PROJECT)
 	radon mi --min $(MIN_MAINTANABILITY) --show $(PROJECT)
+
+venv_check_complexity:
+	./scripts/within_venv -r checks \
+	make check_complexity
+
+ci_check_complexity:
+	./scripts/with_pip -r checks \
+	make check_complexity
+
 
 ##
 ## all (for developper convenience, if you pass this, you should pass the
 ##     pipeline "Sanity checks" stage. Fastests checks are executed first)
 ##
-check-all: check-pep8 check-complexity check-lint
+check_all: check_pep8 check_complexity check_lint
+pip_check_all: pip_check_pep8 pip_check_complexity pip_check_lint
+venv_check_all: venv_check_pep8 venv_check_complexity venv_check_lint
 
 
 #################################################################################
 ## Documentation
 #################################################################################
 ## 
+build_doc:
+	export PYTHONPATH=$$PWD:$$PYTHONPATH && \
+	make -C docs/ html
 
-build_doc: FORCE
+venv_build_doc: FORCE
 	./scripts/within_venv -r docs -r $(PROJECT) \
 	make build-doc
 
-build-doc:
-	export PYTHONPATH=$$PWD:$$PYTHONPATH && \
-	make -C docs/ html
+pip_build_doc: FORCE
+	./scripts/with_pip -r docs -r $(PROJECT) \
+	make build-doc
+
 
 #################################################################################
 ## Packaging as python wheel and docker image
@@ -84,12 +104,25 @@ build-doc:
 ## 
 
 build_package: FORCE
-	./scripts/within_venv -r packaging \
 	python setup.py bdist_wheel
 	rm -Rf build/ $(PROJECT).egg-info/
 	ls -l dist/
 
+venv_build_package: FORCE
+	./scripts/within_venv -r packaging \
+	make build_package
+
+pip_build_package: FORCE
+	./scripts/with_pip -r packaging \
+	make build_package
+
 build_container: FORCE
+	true
+
+venv_build_container: FORCE
+	true
+
+pip_build_container: FORCE
 	true
 
 #################################################################################
