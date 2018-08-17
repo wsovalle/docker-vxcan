@@ -1,6 +1,7 @@
 stages:
  - check
- - build
+ - build1
+ - build2
  - test
  - deploy
 
@@ -8,40 +9,37 @@ stages:
 check_pep8:
  stage: check
  script: make check_pep8
- artifacts:
-  - check_pep8.log
 
 check_lint:
  stage: check
  script: make check_lint
- artifacts:
-  - check_lint.log
 
 check_complexity:
  stage: check
  script: make check_complexity
- artifacts:
-  - check_complexity.log
 
 build_doc:
- stage: build
+ stage: build1
  script: make build_doc
  artifacts:
-  - build_doc.logs
+  name: Documentation
+  paths:
+   - docs/_build/
 
 build_package:
- stage: build
+ stage: build1
  script: make build_package
  artifacts:
-  - build_package.logs
+  name: Python package
+  paths:
+   - dist/
 
 build_container:
- stage: build
+ stage: build2
  script: make build_container
  dependencies:
   - build_package
- artifacts:
-  - build_container.logs
+  - build_doc
 
 deploy_package_staging:
  stage: deploy
