@@ -1,3 +1,6 @@
+image: python:3.5
+
+
 stages:
  - check
  - build1
