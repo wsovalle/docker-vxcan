@@ -23,7 +23,7 @@ check_complexity:
 
 build_doc:
  stage: build1
- script: make build_doc
+ script: make pip_build_doc
  artifacts:
   name: Documentation
   paths:
@@ -48,4 +48,6 @@ deploy_package_staging:
  stage: deploy
  script: make pip_deploy_package_staging
  dependencies:
-   - build_package
+  - build_package
+ only:
+  - master

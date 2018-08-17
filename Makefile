@@ -91,11 +91,11 @@ build_doc:
 
 venv_build_doc: FORCE
 	./scripts/within_venv -r docs -r $(PROJECT) \
-	make build-doc
+	make build_doc
 
 pip_build_doc: FORCE
 	./scripts/with_pip -r docs -r $(PROJECT) \
-	make build-doc
+	make build_doc
 
 
 #################################################################################
