@@ -117,15 +117,7 @@ pip_build_package: FORCE
 	make build_package
 
 build_plugin: FORCE
-	tag=$$(python -c "import random; print('{:x}'.format(random.getrandbits(128)));") && \
-	docker build -t "$$tag" -f images/docker-plugin/Dockerfile . && \
-	id=$$(docker create "$$tag" true) && \
-	mkdir -p _build/docker-plugin/rootfs && \
-	docker export "$$id" | tar -x -C _build/docker-plugin/rootfs && \
-	docker rm -vf "$$id" && \
-	docker rmi "$$tag" && \
-	cp vxcan.json _build/docker-plugin/config.json && \
-	docker plugin create $(PROJECT) _build/docker-plugin/
+	images/docker-plugin/create_plugin.sh
 
 venv_build_container: FORCE
 	true
