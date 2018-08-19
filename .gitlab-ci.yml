@@ -39,6 +39,14 @@ build_package:
 
 build_plugin:
  stage: build2
+ image: docker:stable
+ services:
+   - docker:dind
+ variables:
+   DOCKER_HOST: tcp://docker:2375
+   DOCKER_DRIVER: overlay2
+ tags:
+  - docker
  script: make build_plugin
  dependencies:
   - build_package
