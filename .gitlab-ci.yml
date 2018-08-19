@@ -47,7 +47,8 @@ build_plugin:
    DOCKER_DRIVER: overlay2
  tags:
   - docker
- script: make build_plugin
+ # script: make build_plugin
+ script: images/docker-plugin/create_plugin.sh
  dependencies:
   - build_package
  artifacts:
