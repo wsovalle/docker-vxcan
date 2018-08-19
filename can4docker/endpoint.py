@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
+import pyroute2
+
 from . import utils
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EndPoint(object):
@@ -12,36 +19,42 @@ class EndPoint(object):
         self.peer_namespace = None
 
     def create_resource(self):
-        utils.sh("ip link add {0} type vxcan peer name {1}".format(
-            self.if_name, self.peer_if_name))
-        alias = "CAN Bus for Docker EndPoint {0}".format(
-            self.endpoint_id)
-        utils.sh("ip link set dev {0} alias '{1}'".format(
-            self.if_name, alias))
-        utils.sh("ip link set {0} up".format(self.if_name))
+        LOGGER.debug("Creating resource for enpoint {}...".format(self.endpoint_id))
+        with pyroute2.IPDB() as ipdb:
+            with ipdb.create(kind='vxcan', ifname=self.if_name,
+                             peer=self.peer_if_name) as link:
+                link.up()
+        LOGGER.debug("Created resource for enpoint {}.".format(self.endpoint_id))
 
     def delete_resource(self):
-        utils.sh("ip link set {0} down".format(self.if_name))
-        utils.sh("ip link del {0}".format(self.if_name))
+        LOGGER.debug("Deleting resource for enpoint {}...".format(self.endpoint_id))
+        with pyroute2.IPDB() as ipdb:
+            with ipdb.interfaces[self.if_name] as link:
+                link.down()
+                link.remove()
+        LOGGER.debug("Deleted resource for enpoint {}.".format(self.endpoint_id))
 
     def attach(self, namespace):
+        LOGGER.debug("Attaching enpoint {} to namespace {}...".format(
+            self.endpoint_id, namespace))
+        LOGGER.debug("Changing namespace...")
+        with pyroute2.IPDB() as ipdb:
+            with ipdb.interfaces[self.peer_if_name] as link:
+                link.net_ns_fd = namespace
+        LOGGER.debug("Bringing up...")
+        with pyroute2.IPDB(nl=pyroute2.NetNS(namespace)) as ipdb:
+            with ipdb.interfaces[self.peer_if_name] as link:
+                link.up()
         self.peer_namespace = namespace
-        utils.sh("rm -f /var/run/netns/{0}".format(self.peer_namespace))
-        utils.sh("ln -s /var/run/docker/netns/{0} /var/run/netns/".format(
-            self.peer_namespace))
-        alias = "CAN Bus for Docker Sandbox {0}".format(self.endpoint_id)
-        utils.sh("ip link set dev {0} alias '{1}'".format(
-            self.peer_if_name, alias))
-        utils.sh("ip link set {0} netns {1}".format(
-            self.peer_if_name, self.peer_namespace))
-        utils.sh("ip netns exec {0} ip link set {1} up".format(
-            self.peer_namespace, self.peer_if_name))
+        LOGGER.debug("Attached enpoint {} to namespace {}.".format(
+            self.endpoint_id, namespace))
 
     def detach(self):
-        # if_name = "vcan{}".format(network_id[:8])
-        # ep_name = "vcan{}".format(endpoint_id[:8])
-        # net_ns = sandbox_key.split('/')[-1]
-        # utils.sh("ip netns exec {net_ns} ip link set {ep_name} down".format(net_ns=net_ns, ep_name=ep_name))
-        # utils.sh("ip netns exec {net_ns} ip link set {ep_name} netns 1".format(ep_name=ep_name, net_ns=net_ns))
-        # utils.sh("unlink /var/run/netns/{net_ns}")
-        return
+        LOGGER.debug("Detaching enpoint {} from namespace {}...".format(
+            self.endpoint_id, self.peer_namespace))
+        with pyroute2.IPDB(nl=pyroute2.NetNS(self.peer_namespace)) as ipdb:
+            with ipdb.interfaces[self.peer_if_name] as link:
+                link.down()
+                link.net_ns_fd = ""
+        LOGGER.debug("Detached enpoint {} from namespace {}.".format(
+            self.endpoint_id, self.peer_namespace))

@@ -18,11 +18,12 @@ class NetworkManager(object):
         self.networks = {}
 
     def activate(self):
-        utils.sh("mkdir -p /var/run/netns/")
+        LOGGER.info("Activating plugin..")
+        return  # FIXME: load from env
         client = docker.from_env()
         for network in client.networks.list():
             network.reload()
-            if network.attrs['Driver'] != 'vxcan':
+            if network.attrs['Driver'] != 'chgans/can4docker':
                 continue
             network_id = network.attrs['Id']
             LOGGER.info("Adding network {}".format(network_id))

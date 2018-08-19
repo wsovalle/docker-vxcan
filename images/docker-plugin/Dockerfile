@@ -11,12 +11,31 @@
 # - python:3.5 is 917MB ?!?, python:3.5-alpine is 75.3 MB
 
 FROM python:3.5-alpine
+
 WORKDIR /
-ADD dist/can4docker-*.whl images/docker-plugin/can4docker.sh /
-RUN mkdir -p /run/docker/plugins && \
-    pip install gunicorn can4docker-*.whl && \
+
+RUN apk add --no-cache --virtual .build-deps libc-dev gcc linux-headers make && \
+    wget https://github.com/linux-can/can-utils/archive/v2018.02.0.tar.gz && \
+    echo 'static inline void error(int status, int errnum, const char *message, ...) {}' > /usr/include/error.h
+RUN tar xzf v2018.02.0.tar.gz && \
+    cd can-utils-2018.02.0 && \
+    make && \
+    make install && \
+    apk del .build-deps
+
+ADD dist/can4docker-*.whl \
+    images/docker-plugin/can4docker.sh \
+    images/docker-plugin/pyroute2-0000-fix-vxcan-peer.patch \
+    /
+
+RUN pip install gunicorn can4docker-*.whl && \
+    \
+    (cd /usr/local/lib/python3.5/site-packages/pyroute2 && \
+      patch -p2 </pyroute2-0000-fix-vxcan-peer.patch) && \
+    \
     rm -f can4docker-*.whl && \
     rm -Rf /root/.cache /var/cache/apk/* && \
     find /usr/share/terminfo -type f -delete && \
     find /usr/local/lib \( -name '*.pyc' -o -name '*.pyo' \) -delete
+
 CMD ["can4docker.sh"]
