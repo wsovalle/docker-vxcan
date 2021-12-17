@@ -4,12 +4,12 @@
 set -euxo pipefail
 
 # Install requirements
-python -m pip install --upgrade pip setuptools
+python3 -m pip install --upgrade pip setuptools
 while [ $# -ge 2 ];
 do
     if [ "$1" == "-r" ];
     then
-        python -m pip install -r requirements/$2-pip.txt
+        python3 -m pip install -r requirements/$2-pip.txt
         shift
         shift
     else

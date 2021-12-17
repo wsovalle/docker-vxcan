@@ -30,7 +30,7 @@ venv: FORCE
 ## pycodestyle
 ##
 check_pep8:
-	python -m pycodestyle --show-source --show-pep8 --statistics $(PROJECT) tests
+	python3 -m pycodestyle --show-source --show-pep8 --statistics $(PROJECT) tests
 
 venv_check_pep8: FORCE
 	./scripts/within_venv -r checks \
@@ -104,7 +104,7 @@ pip_build_doc: FORCE
 ## 
 
 build_package: FORCE
-	python setup.py bdist_wheel
+	python3 setup.py bdist_wheel
 	rm -Rf build/ $(PROJECT).egg-info/
 	ls -l dist/
 
@@ -137,7 +137,7 @@ deploy_package_staging: FORCE
 	./scripts/within_venv \
 		"pip install --index-url https://test.pypi.org/simple/ \
 		--extra-index-url https://pypi.org/simple $(PROJECT) && \
-		python -c 'import can4docker; print(can4docker.__name__)'"
+		python3 -c 'import can4docker; print(can4docker.__name__)'"
 
 
 #################################################################################
