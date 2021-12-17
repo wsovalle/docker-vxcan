@@ -14,7 +14,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 APPLICATION = Flask("can4docker")
 NETWORK_MANAGER = NetworkManager()
-NETWORK_MANAGER.activate()  # RPC not called by docker
 APPLICATION.config['network_manager'] = NETWORK_MANAGER
 
 
@@ -36,22 +35,6 @@ def dispatch(data):
     resp.status_code = code
     LOGGER.debug("{}, {}".format(code, data))
     return resp
-
-
-@APPLICATION.route('/Plugin.Activate', methods=['POST'])
-def activate():
-    """ Routes Docker Network '/Plugin.Activate'."""
-    manager = APPLICATION.config['network_manager']
-    LOGGER.debug("/Plugin.Activate")
-    try:
-        manager.activate()
-    except Exception as e:
-        return dispatch({
-            "Err": "Failed to activate plugin: {1}".format(
-                str(e))
-        })
-
-    return dispatch({"Implements": ["NetworkDriver"]})
 
 
 @APPLICATION.route('/NetworkDriver.GetCapabilities', methods=['POST'])

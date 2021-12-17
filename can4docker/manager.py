@@ -17,28 +17,6 @@ class NetworkManager(object):
     def __init__(self):
         self.networks = {}
 
-    def activate(self):
-        LOGGER.info("Activating plugin..")
-        return  # FIXME: load from env
-        client = docker.from_env()
-        for network in client.networks.list():
-            network.reload()
-            if network.attrs['Driver'] != 'chgans/can4docker':
-                continue
-            network_id = network.attrs['Id']
-            LOGGER.info("Adding network {}".format(network_id))
-            can_network = Network(network_id)
-            self.networks[network_id] = can_network
-            for container_id, container_attrs in network.attrs['Containers'].items():
-                endpoint_id = container_attrs['EndpointID']
-                LOGGER.info("Adding endpoint {}".format(endpoint_id))
-                can_endpoint = EndPoint(endpoint_id)
-                can_network.add_endpoint(can_endpoint)
-
-    def desactivate(self):
-        """ Cleanup done during shutdown of server."""
-        pass
-
     def create_network(self, network_id, options):
         can_dev = options['com.docker.network.generic'].get('vxcan.dev', 'vxcan')
         can_peer = options['com.docker.network.generic'].get('vxcan.peer', 'vcan')
