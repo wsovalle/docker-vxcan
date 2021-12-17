@@ -12,10 +12,10 @@ LOGGER = logging.getLogger(__name__)
 
 class EndPoint(object):
 
-    def __init__(self, endpoint_id):
+    def __init__(self, endpoint_id, can_dev, can_id):
         self.endpoint_id = endpoint_id
         self.if_name = "vcan{}".format(endpoint_id[:8])
-        self.peer_if_name = "{}p".format(self.if_name)
+        self.peer_if_name = can_dev + str(can_id)
         self.peer_namespace = None
 
     def create_resource(self):

@@ -7,9 +7,11 @@ from .gateway import Gateway
 
 class Network(object):
 
-    def __init__(self, network_id):
+    def __init__(self, network_id, can_dev, can_id, can_peer):
         self.network_id = network_id
-        self.if_name = "vcan{}".format(network_id[:8])
+        self.can_id = can_id
+        self.can_peer = can_peer
+        self.if_name = "{}{}".format(can_dev, can_id)
         self.endpoints = {}
         self.gateway = Gateway()
 

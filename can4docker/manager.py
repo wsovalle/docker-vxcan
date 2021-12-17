@@ -40,7 +40,10 @@ class NetworkManager(object):
         pass
 
     def create_network(self, network_id, options):
-        network = Network(network_id)
+        can_dev = options['com.docker.network.generic'].get('vxcan.dev', 'vxcan')
+        can_peer = options['com.docker.network.generic'].get('vxcan.peer', 'vcan')
+        can_id = options['com.docker.network.generic'].get('vxcan.id', network_id)
+        network = Network(network_id, can_dev, can_id, can_peer)
         network.create_resource()
         self.networks[network_id] = network
 
@@ -49,7 +52,9 @@ class NetworkManager(object):
         network.delete_resource()
 
     def create_endpoint(self, network_id, endpoint_id, options):
-        endpoint = EndPoint(endpoint_id)
+        can_dev = options.get('vxcan.dev', self.networks[network_id].can_peer)
+        can_id = options.get('vxcan.id', self.networks[network_id].can_id)
+        endpoint = EndPoint(endpoint_id, can_dev, can_id)
         self.networks[network_id].add_endpoint(endpoint)
         endpoint.create_resource()
 
