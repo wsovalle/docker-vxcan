@@ -30,9 +30,7 @@ class NetworkManager(object):
         network.delete_resource()
 
     def create_endpoint(self, network_id, endpoint_id, options):
-        can_dev = options.get('vxcan.dev', self.networks[network_id].can_peer)
-        can_id = options.get('vxcan.id', self.networks[network_id].can_id)
-        endpoint = EndPoint(endpoint_id, can_dev, can_id)
+        endpoint = EndPoint(endpoint_id)
         self.networks[network_id].add_endpoint(endpoint)
         endpoint.create_resource()
 
@@ -42,7 +40,8 @@ class NetworkManager(object):
 
     def attach_endpoint(self, network_id, endpoint_id, sandbox_key, options):
         namespace_id = sandbox_key.split('/')[-1]
-        self.networks[network_id].attach_endpoint(endpoint_id, namespace_id)
+        can_peer = options.get('vxcan.peer', None)
+        return self.networks[network_id].attach_endpoint(endpoint_id, namespace_id, can_peer)
 
     def detach_endpoint(self, network_id, endpoint_id):
         self.networks[network_id].detach_endpoint(endpoint_id)

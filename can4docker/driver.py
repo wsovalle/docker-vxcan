@@ -150,14 +150,14 @@ def join():
     sandbox_key = data['SandboxKey']
     options = data['Options']
     try:
-        manager.attach_endpoint(network_id, endpoint_id, sandbox_key, options)
+        res = manager.attach_endpoint(network_id, endpoint_id, sandbox_key, options)
     except Exception as e:
         return dispatch({
             "Err": "Failed to join {c} to the network endpoint {n}:{e} : {x}".format(
                 n=network_id, e=endpoint_id, x=str(e), c=sandbox_key)
         })
 
-    return dispatch({"Err": ""})
+    return dispatch(res)
 
 
 @APPLICATION.route('/NetworkDriver.Leave', methods=['POST'])
