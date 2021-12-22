@@ -10,32 +10,33 @@
 # - pyc/pyo => 3 MB
 # - python:3.5 is 917MB ?!?, python:3.5-alpine is 75.3 MB
 
-FROM python:3.5-alpine
+FROM python:3.8-alpine
 
 WORKDIR /
-
-RUN apk add --no-cache --virtual .build-deps libc-dev gcc linux-headers make && \
-    wget https://github.com/linux-can/can-utils/archive/v2018.02.0.tar.gz && \
+ENV CANUTILS_VERSION=2021.08.0
+RUN apk add --no-cache --virtual .build-deps libc-dev gcc linux-headers make patch && \
+    wget https://github.com/linux-can/can-utils/archive/refs/tags/v${CANUTILS_VERSION}.tar.gz && \
     echo 'static inline void error(int status, int errnum, const char *message, ...) {}' > /usr/include/error.h
-RUN tar xzf v2018.02.0.tar.gz && \
-    cd can-utils-2018.02.0 && \
+
+RUN tar xzf v${CANUTILS_VERSION}.tar.gz && \
+    cd can-utils-${CANUTILS_VERSION} && \
     make && \
-    make install && \
-    apk del .build-deps
+    make install
 
 ADD dist/can4docker-*.whl \
     images/docker-plugin/can4docker.sh \
     images/docker-plugin/pyroute2-0000-fix-vxcan-peer.patch \
     /
 
-RUN pip install gunicorn can4docker-*.whl && \
+RUN python -m pip install --upgrade pip && \
+    pip install gunicorn can4docker-*.whl && \
     \
-    (cd /usr/local/lib/python3.5/site-packages/pyroute2 && \
+    (cd /usr/local/lib/python3.8/site-packages/pyroute2 && \
       patch -p2 </pyroute2-0000-fix-vxcan-peer.patch) && \
     \
     rm -f can4docker-*.whl && \
     rm -Rf /root/.cache /var/cache/apk/* && \
-    find /usr/share/terminfo -type f -delete && \
-    find /usr/local/lib \( -name '*.pyc' -o -name '*.pyo' \) -delete
+    find /usr/local/lib \( -name '*.pyc' -o -name '*.pyo' \) -delete && \
+    apk del .build-deps
 
 CMD ["can4docker.sh"]

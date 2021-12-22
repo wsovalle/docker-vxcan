@@ -17,6 +17,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     network_manager = NetworkManager()
-    network_manager.activate()
     APPLICATION.config['network_manager'] = network_manager
     APPLICATION.run(host=args.host, port=args.port)
