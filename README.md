@@ -71,7 +71,9 @@ On network level (`docker network create --opts `):
 Endpoint level (`docker network connect --driver-opts `, not supported by `compose`):
 - `vxcan.peer` - CAN interface name in a container
 
-# Manual build (dev)
+# Development
+
+## Manual build
 
 Simple way of rebuilding plugin from sources is to use an attached script:
 
@@ -80,3 +82,14 @@ Simple way of rebuilding plugin from sources is to use an attached script:
 It removes existing plugin, rebuilds from sources and enables freshly built version.
 
 For separate steps refer to the contents of above script.
+
+## References
+
+Links to resources used while creating and fixing this plugin
+
+- https://wiki.automotivelinux.org/_media/agl-distro/agl2018-socketcan.pdf
+- https://www.spinics.net/lists/linux-can/msg00297.html
+- https://www.lagerdata.com/articles/forwarding-can-bus-traffic-to-a-docker-container-using-vxcan-on-raspberry-pi
+- https://chemnitzer.linux-tage.de/2021/media/programm/folien/210.pdf
+- https://github.com/docker/go-plugins-helpers
+- https://github.com/moby/libnetwork/blob/master/docs/remote.md
