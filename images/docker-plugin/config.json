@@ -1,0 +1,23 @@
+{
+    "description": "Provides CAN connectivity",
+    "documentation": "https://can4docker.rtfd.io",
+    "entrypoint": ["/can4docker.sh"],
+    "network": {
+	"type": "host"
+    },
+    "mounts": [
+    	{
+    	    "type": "bind",
+    	    "source": "/var/run/docker/netns",
+    	    "destination": "/run/netns",
+    	    "options": ["ro", "rbind"]
+    	}
+    ],	
+    "interface" : {
+	"types": ["docker.networkdriver/1.0"],
+	"socket": "can4docker.sock"
+    },
+    "linux": {
+	"capabilities": ["CAP_SYS_ADMIN", "CAP_NET_ADMIN"]
+    }
+}

@@ -2,3 +2,5 @@
 *.pyc
 /venv
 /docs/_build/
+dist/
+_build/

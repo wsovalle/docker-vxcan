@@ -16,21 +16,17 @@ class Gateway(object):
     """
 
     def __init__(self):
-        pass
+        self.rules = {}
 
     def add_rule(self, src_netdev, dst_netdev):
-        utils.sh("cangw -A -s {} -d {} -e".format(src_netdev, dst_netdev))
+        if (not self.rules.get(src_netdev, None)):
+            self.rules[src_netdev] = []
+        if not dst_netdev in self.rules[src_netdev]:
+            utils.sh("cangw -A -s {} -d {} -eX".format(src_netdev, dst_netdev))
+            self.rules[src_netdev].append(dst_netdev)
 
     def remove_rule(self, src_netdev, dst_netdev):
-        utils.sh("cangw -D -s {} -d {} -e".format(src_netdev, dst_netdev))
-
-    def rules(self):
-        utils.sh("cangw -L")
-
-    def flush(self):
-        """Flush the cangw table.
-
-
-        .. warning:: This flushed the table **system-wide**.
-        """
-        utils.sh("cangw -F")
+        rules = self.rules.get(src_netdev, None)
+        if rules and dst_netdev in rules:
+            utils.sh("cangw -D -s {} -d {} -eX".format(src_netdev, dst_netdev))
+            self.rules.remove(dst_netdev)

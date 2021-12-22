@@ -37,12 +37,24 @@ build_package:
   paths:
    - dist/
 
-build_container:
+build_plugin:
  stage: build2
- script: make pip_build_container
+ image: docker:stable
+ services:
+   - docker:dind
+ variables:
+   DOCKER_HOST: tcp://docker:2375
+   DOCKER_DRIVER: overlay2
+ tags:
+  - docker
+ # script: make build_plugin
+ script: images/docker-plugin/create_plugin.sh
  dependencies:
   - build_package
-  - build_doc
+ artifacts:
+  name: Docker plugin
+  paths:
+   - _build/docker-plugin
 
 deploy_package_staging:
  stage: deploy
