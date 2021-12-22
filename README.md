@@ -70,3 +70,13 @@ On network level (`docker network create --opts `):
 
 Endpoint level (`docker network connect --driver-opts `, not supported by `compose`):
 - `vxcan.peer` - CAN interface name in a container
+
+# Manual build (dev)
+
+Simple way of rebuilding plugin from sources is to use an attached script:
+
+`$ images/docker-plugin/rebuild-plugin.sh`
+
+It removes existing plugin, rebuilds from sources and enables freshly built version.
+
+For separate steps refer to the contents of above script.
