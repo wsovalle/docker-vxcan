@@ -1,23 +1,19 @@
-diff --git a/pyroute2/netlink/rtnl/ifinfmsg/__init__.py b/pyroute2/netlink/rtnl/ifinfmsg/__init__.py
-index cb441b7..8a52172 100644
---- a/pyroute2/netlink/rtnl/ifinfmsg/__init__.py
-+++ b/pyroute2/netlink/rtnl/ifinfmsg/__init__.py
-@@ -688,6 +688,8 @@ class ifinfbase(object):
-                     'ip6gre': ip6gre_data,
-                     'ip6gretap': ip6gre_data,
-                     'veth': veth_data,
-+                    # FIXME: VXCAN uses peer like veth
-+                    'vxcan': veth_data,
-                     'bridge': bridge_data}
-         # expand supported interface types
-         data_map.update(data_plugins)
-diff --git a/pyroute2/netlink/rtnl/req.py b/pyroute2/netlink/rtnl/req.py
-index 45c245d..8164fb2 100644
---- a/pyroute2/netlink/rtnl/req.py
-+++ b/pyroute2/netlink/rtnl/req.py
-@@ -510,8 +510,8 @@ class IPLinkRequest(IPRequest):
-         if key in self.specific:
-             self.info_data.append((self.specific[key], value))
+--- a/pr2modules/netlink/rtnl/ifinfmsg/__init__.py        2022-02-24 13:33:51.272755861 -0700
++++ b/pr2modules/netlink/rtnl/ifinfmsg/__init__.py        2022-02-24 13:40:27.572755900 -0700
+@@ -1023,6 +1023,8 @@ class ifinfbase(object):
+             'ip6gre': ip6gre_data,
+             'ip6gretap': ip6gre_data,
+             'veth': veth_data,
++            # FIXME: VXCAN uses peer like veth
++            'vxcan': veth_data,
+             'bridge': bridge_data,
+             'bridge_slave': bridge_slave_data,
+         }
+--- a/pr2modules/netlink/rtnl/req.py      2022-02-24 13:33:51.272755861 -0700
++++ b/pr2modules/netlink/rtnl/req.py      2022-02-24 13:41:40.032755900 -0700
+@@ -815,8 +815,8 @@ class IPLinkRequest(IPRequest):
+             else:
+                 self.info_data.append((self.specific[key], value))
              return True
 -        elif key == 'peer' and self.kind == 'veth':
 -            # FIXME: veth hack
