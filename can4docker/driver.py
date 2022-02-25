@@ -120,19 +120,19 @@ def delete_endpoint():
     return dispatch({"Err": ""})
 
 
-@APPLICATION.route('/NetworkDriver.EndpointOperInfo', methods=['POST'])
+@APPLICATION.route('/NetworkDriver.EndpointOpInfo', methods=['POST'])
 def endpoint_operational_info():
     """ Routes Docker Network '/NetworkDriver.EndpointOperInfo'."""
     manager = APPLICATION.config['network_manager']
     data = request.get_json(force=True)
-    LOGGER.debug("/NetworkDriver.EndpointOperInfo: {}".format(data))
+    LOGGER.debug("/NetworkDriver.EndpointOpInfo: {}".format(data))
     network_id = data['NetworkID']
     endpoint_id = data['EndpointID']
     try:
         pass
     except Exception as e:
         return dispatch({
-            "Err": "Failed to retreive enpot orperational info: {}".format(
+            "Err": "Failed to retreive endpoint operational info: {}".format(
                 str(e))
         })
 
