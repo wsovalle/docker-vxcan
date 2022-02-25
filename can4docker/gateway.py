@@ -22,6 +22,7 @@ class Gateway(object):
         if (not self.rules.get(src_netdev, None)):
             self.rules[src_netdev] = []
         if not dst_netdev in self.rules[src_netdev]:
+            LOGGER.debug("/Gateway.add_rule: Adding rule for {} to {}".format(src_netdev, dst_netdev))
             utils.sh("cangw -A -s {} -d {} -eX".format(src_netdev, dst_netdev))
             self.rules[src_netdev].append(dst_netdev)
 
