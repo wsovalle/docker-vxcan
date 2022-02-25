@@ -8,14 +8,12 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 
-
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 APPLICATION = Flask("can4docker")
 NETWORK_MANAGER = NetworkManager()
 APPLICATION.config['network_manager'] = NETWORK_MANAGER
-
 
 def dispatch(data):
     """ To jsonify the response with correct HTTP status code.
