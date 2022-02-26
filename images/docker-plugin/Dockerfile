@@ -1,4 +1,4 @@
-# Current image size: 79.9MB
+# Current image size: 133MB
 # Size reduction:
 # - The important terminfo files are installed by ncurses-terminfo-base into
 #   /etc/terminfo.  The ncurses-terminfo package creates symlinks to those
@@ -9,34 +9,42 @@
 # - /root/.cache => 2 MB
 # - pyc/pyo => 3 MB
 # - python:3.5 is 917MB ?!?, python:3.5-alpine is 75.3 MB
+# - Moving to python:3.9.10-alpine and updated dependencies grew image
 
-FROM python:3.8-alpine
+FROM python:3.9.10-alpine
 
-WORKDIR /
-ENV CANUTILS_VERSION=2021.08.0
-RUN apk add --no-cache --virtual .build-deps libc-dev gcc linux-headers make patch && \
-    wget https://github.com/linux-can/can-utils/archive/refs/tags/v${CANUTILS_VERSION}.tar.gz && \
-    echo 'static inline void error(int status, int errnum, const char *message, ...) {}' > /usr/include/error.h
+# Install base dependencies
+RUN set -ex; \
+  apk update; \
+  apk upgrade; \
+  apk add --no-cache can-utils
 
-RUN tar xzf v${CANUTILS_VERSION}.tar.gz && \
-    cd can-utils-${CANUTILS_VERSION} && \
-    make && \
-    make install
+# # Update PIP
+RUN set -ex; \
+  python -m pip --no-cache-dir install --upgrade pip gunicorn
 
+# Copy over the necessary files
 ADD dist/can4docker-*.whl \
-    images/docker-plugin/can4docker.sh \
-    images/docker-plugin/pyroute2-0000-fix-vxcan-peer.patch \
-    /
+  images/docker-plugin/can4docker.sh \
+  images/docker-plugin/pyroute2-0000-fix-vxcan-peer.patch \
+  /
 
-RUN python -m pip install --upgrade pip && \
-    pip install gunicorn can4docker-*.whl && \
-    \
-    (cd /usr/local/lib/python3.8/site-packages/pr2modules && \
-      patch -p2 </pyroute2-0000-fix-vxcan-peer.patch) && \
-    \
-    rm -f can4docker-*.whl && \
-    rm -Rf /root/.cache /var/cache/apk/* && \
-    find /usr/local/lib \( -name '*.pyc' -o -name '*.pyo' \) -delete && \
-    apk del .build-deps
+# Install application and dependencies
+RUN set -ex; \
+  pip --no-cache-dir install can4docker-*.whl
+
+# Patch pyroute2
+RUN set -ex; \
+  apk add --no-cache patch && \
+  (cd /usr/local/lib/python3.9/site-packages/pr2modules && \
+  patch -p2 </pyroute2-0000-fix-vxcan-peer.patch)
+
+# Cleanup
+RUN set -ex; \
+  apk del patch && \
+  rm -f can4docker-*.whl && \
+  rm -f pyroute2-*.patch && \
+  rm -Rf /root/.cache /var/cache/apk/* && \
+  find /usr/local/lib \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 CMD ["can4docker.sh"]
