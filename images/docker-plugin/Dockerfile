@@ -31,7 +31,7 @@ ADD dist/can4docker-*.whl \
 RUN python -m pip install --upgrade pip && \
     pip install gunicorn can4docker-*.whl && \
     \
-    (cd /usr/local/lib/python3.8/site-packages/pyroute2 && \
+    (cd /usr/local/lib/python3.8/site-packages/pr2modules && \
       patch -p2 </pyroute2-0000-fix-vxcan-peer.patch) && \
     \
     rm -f can4docker-*.whl && \

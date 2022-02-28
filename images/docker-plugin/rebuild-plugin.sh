@@ -1,10 +1,25 @@
 #!/bin/bash -e
 
-docker plugin ls --filter enabled=true | grep wsovalle/vxcan > /dev/null && \
-    docker plugin disable wsovalle/vxcan
-docker plugin ls | grep wsovalle/vxcan > /dev/null && \
-    docker plugin rm wsovalle/vxcan
-make build_package
+PLUGINNAME=wsovalle/vxcan
+
+# Remove active networks
+docker network ls | grep can && \
+    docker network ls | grep can | cut -f 1 -d ' ' | tr '\n' '\0' | xargs -0 -n1 docker network rm
+
+# Disable the plugin
+docker plugin ls --filter enabled=true | grep $PLUGINNAME > /dev/null && \
+    docker plugin disable $PLUGINNAME
+
+# Remove the plugin
+docker plugin ls | grep $PLUGINNAME > /dev/null && \
+    docker plugin rm $PLUGINNAME
+
+# Build the can4docker Python package (make build_package)
+python3 setup.py bdist_wheel
+
+# Create the plugin rootfs and config.json
 images/docker-plugin/create_plugin.sh
-docker plugin create wsovalle/vxcan _build/docker-plugin/
-docker plugin enable wsovalle/vxcan
+
+# Create and enable the plugin
+docker plugin create $PLUGINNAME _build/docker-plugin/
+docker plugin enable $PLUGINNAME

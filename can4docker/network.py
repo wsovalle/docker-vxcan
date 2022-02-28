@@ -16,15 +16,12 @@ class Network(object):
         self.gateway = Gateway()
 
     def create_resource(self):
-        with pyroute2.IPDB() as ipdb:
-            with ipdb.create(kind='vcan', ifname=self.if_name) as link:
-                link.up()
+        with pyroute2.NDB(db_provider='sqlite3',db_spec=':memory:') as ndb:
+            ndb.interfaces.create(kind='vcan', ifname=self.if_name).set('state', 'up').commit()
 
     def delete_resource(self):
-        with pyroute2.IPDB() as ipdb:
-            with ipdb.interfaces[self.if_name] as link:
-                link.down()
-                link.remove()
+        with pyroute2.NDB(db_provider='sqlite3',db_spec=':memory:') as ndb:
+            ndb.interfaces[self.if_name].set('state','down').remove().commit()
 
     def add_endpoint(self, endpoint):
         self.endpoints[endpoint.endpoint_id] = endpoint

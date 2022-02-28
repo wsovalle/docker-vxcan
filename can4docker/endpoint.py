@@ -18,17 +18,14 @@ class EndPoint(object):
         self.peer_if_name = "{}p".format(self.if_name)
 
     def create_resource(self):
-        LOGGER.debug("Creating resource for enpoint {}...".format(self.endpoint_id))
-        with pyroute2.IPDB() as ipdb:
-            with ipdb.create(kind='vxcan', ifname=self.if_name,
-                             peer=self.peer_if_name) as link:
-                link.up()
-        LOGGER.debug("Created resource for enpoint {}.".format(self.endpoint_id))
+        LOGGER.debug("Creating resource for endpoint {}...".format(self.endpoint_id))
+        with pyroute2.NDB(db_provider='sqlite3',db_spec=':memory:') as ndb:
+            ndb.interfaces.create(kind='vxcan', ifname=self.if_name,
+                                  peer=self.peer_if_name).set('state','up').commit()
+        LOGGER.debug("Created resource for endpoint {}.".format(self.endpoint_id))
 
     def delete_resource(self):
-        LOGGER.debug("Deleting resource for enpoint {}...".format(self.endpoint_id))
-        with pyroute2.IPDB() as ipdb:
-            with ipdb.interfaces[self.if_name] as link:
-                link.down()
-                link.remove()
-        LOGGER.debug("Deleted resource for enpoint {}.".format(self.endpoint_id))
+        LOGGER.debug("Deleting resource for endpoint {}...".format(self.endpoint_id))
+        with pyroute2.NDB(db_provider='sqlite3',db_spec=':memory:') as ndb:
+            ndb.interfaces[self.if_name].set('state','down').remove().commit()
+        LOGGER.debug("Deleted resource for endpoint {}.".format(self.endpoint_id))

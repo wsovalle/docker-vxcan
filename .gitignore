@@ -3,4 +3,6 @@
 /venv
 /docs/_build/
 dist/
-_build/
+_*/
+build/
+*.egg-info/
