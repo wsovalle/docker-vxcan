@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 import pyroute2
 
 from . import utils
 
-
 LOGGER = logging.getLogger(__name__)
-
 
 class EndPoint(object):
 

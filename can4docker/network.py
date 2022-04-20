@@ -4,7 +4,6 @@ import pyroute2
 
 from .gateway import Gateway
 
-
 class Network(object):
 
     def __init__(self, network_id, can_dev, can_id, can_peer):
@@ -41,10 +40,10 @@ class Network(object):
             can_peer = self.can_peer
         return {
             "InterfaceName": {
-                    "SrcName": endpoint.peer_if_name,
-                    "DstPrefix": can_peer
-                }
+                "SrcName": endpoint.peer_if_name,
+                "DstPrefix": can_peer
             }
+        }
 
     def detach_endpoint(self, endpoint_id):
         endpoint = self.endpoints[endpoint_id]
