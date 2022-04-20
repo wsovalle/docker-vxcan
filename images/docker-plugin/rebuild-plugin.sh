@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
-PLUGINNAME=wsovalle/vxcan
+USERNAME=$(git remote get-url origin | awk '{split($0,a,"[:/]*"); print a[2]}')
+PLUGINNAME=$USERNAME/vxcan
 
 # Remove active networks
 docker network ls | grep can && \
