@@ -35,6 +35,13 @@ def dispatch(data):
     return resp
 
 
+@APPLICATION.route('/Plugin.Activate', methods=['POST'])
+def activate():
+    """ Activate Docker Plugin."""
+    LOGGER.debug("/Plugin.Activate")
+    return dispatch({"Implements": ["NetworkDriver"]})
+
+
 @APPLICATION.route('/NetworkDriver.GetCapabilities', methods=['POST'])
 def capabilities():
     """ Routes Docker Network '/NetworkDriver.GetCapabilities'."""
