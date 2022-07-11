@@ -125,12 +125,12 @@ def delete_endpoint():
     return dispatch({"Err": ""})
 
 
-@APPLICATION.route('/NetworkDriver.EndpointOpInfo', methods=['POST'])
+@APPLICATION.route('/NetworkDriver.EndpointOperInfo', methods=['POST'])
 def endpoint_operational_info():
     """ Routes Docker Network '/NetworkDriver.EndpointOperInfo'."""
     manager = APPLICATION.config['network_manager']
     data = request.get_json(force=True)
-    LOGGER.debug("/NetworkDriver.EndpointOpInfo: {}".format(data))
+    LOGGER.debug("/NetworkDriver.EndpointOperInfo: {}".format(data))
     network_id = data['NetworkID']
     endpoint_id = data['EndpointID']
     try:
