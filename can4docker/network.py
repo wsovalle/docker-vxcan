@@ -4,7 +4,6 @@ import pyroute2
 
 from .gateway import Gateway
 
-
 class Network(object):
 
     def __init__(self, network_id, can_dev, can_id, can_peer):
@@ -16,12 +15,14 @@ class Network(object):
         self.gateway = Gateway()
 
     def create_resource(self):
-        with pyroute2.NDB(db_provider='sqlite3',db_spec=':memory:') as ndb:
-            ndb.interfaces.create(kind='vcan', ifname=self.if_name).set('state', 'up').commit()
+        with pyroute2.NDB(db_provider='sqlite3', db_spec=':memory:') as ndb:
+            if self.if_name not in ndb.interfaces:
+                ndb.interfaces.create(kind='vcan', ifname=self.if_name).set('state', 'up').commit()
 
     def delete_resource(self):
-        with pyroute2.NDB(db_provider='sqlite3',db_spec=':memory:') as ndb:
-            ndb.interfaces[self.if_name].set('state','down').remove().commit()
+        with pyroute2.NDB(db_provider='sqlite3', db_spec=':memory:') as ndb:
+            if self.if_name in ndb.interfaces:
+                ndb.interfaces[self.if_name].set('state', 'down').remove().commit()
 
     def add_endpoint(self, endpoint):
         self.endpoints[endpoint.endpoint_id] = endpoint
@@ -41,10 +42,10 @@ class Network(object):
             can_peer = self.can_peer
         return {
             "InterfaceName": {
-                    "SrcName": endpoint.peer_if_name,
-                    "DstPrefix": can_peer
-                }
+                "SrcName": endpoint.peer_if_name,
+                "DstPrefix": can_peer
             }
+        }
 
     def detach_endpoint(self, endpoint_id):
         endpoint = self.endpoints[endpoint_id]

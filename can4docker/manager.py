@@ -10,16 +10,27 @@ from .endpoint import EndPoint
 
 LOGGER = logging.getLogger(__name__)
 
-
 class NetworkManager(object):
     """A CAN network manager."""
 
     def __init__(self):
         self.networks = {}
 
+    def load_networks(self):
+        client = docker.from_env()
+        for nw in client.networks.list():
+            if nw.attrs['Driver'] == 'can4docker':
+                can_dev = nw.attrs['Options'].get('vxcan.dev', 'vcan')
+                can_id = nw.attrs['Options'].get('vxcan.id', 0)
+                can_peer = nw.attrs['Options'].get('vxcan.peer', 'vxcanp')
+                network_id = nw.attrs['Id']
+                network = Network(network_id, can_dev, can_id, can_peer)
+                network.create_resource()
+                self.networks[network_id] = network
+
     def create_network(self, network_id, options):
-        can_dev = options['com.docker.network.generic'].get('vxcan.dev', 'vxcan')
-        can_peer = options['com.docker.network.generic'].get('vxcan.peer', 'vcan')
+        can_dev = options['com.docker.network.generic'].get('vxcan.dev', 'vcan')
+        can_peer = options['com.docker.network.generic'].get('vxcan.peer', 'vxcanp')
         can_id = options['com.docker.network.generic'].get('vxcan.id', network_id)
         network = Network(network_id, can_dev, can_id, can_peer)
         network.create_resource()

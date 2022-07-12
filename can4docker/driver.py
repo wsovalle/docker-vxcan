@@ -8,14 +8,12 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 
-
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 APPLICATION = Flask("can4docker")
 NETWORK_MANAGER = NetworkManager()
 APPLICATION.config['network_manager'] = NETWORK_MANAGER
-
 
 def dispatch(data):
     """ To jsonify the response with correct HTTP status code.
@@ -40,7 +38,8 @@ def dispatch(data):
 @APPLICATION.route('/Plugin.Activate', methods=['POST'])
 def activate():
     """ Activate Docker Plugin."""
-    LOGGER.debug("/Plugin.Activate")
+    LOGGER.debug("/Plugin.Activate - loading existing networks")
+    APPLICATION.config['network_manager'].load_networks()
     return dispatch({"Implements": ["NetworkDriver"]})
 
 
@@ -139,7 +138,7 @@ def endpoint_operational_info():
         pass
     except Exception as e:
         return dispatch({
-            "Err": "Failed to retreive enpot orperational info: {}".format(
+            "Err": "Failed to retreive endpoint operational info: {}".format(
                 str(e))
         })
 
