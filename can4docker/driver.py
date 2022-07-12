@@ -38,7 +38,8 @@ def dispatch(data):
 @APPLICATION.route('/Plugin.Activate', methods=['POST'])
 def activate():
     """ Activate Docker Plugin."""
-    LOGGER.debug("/Plugin.Activate")
+    LOGGER.debug("/Plugin.Activate - loading existing networks")
+    APPLICATION.config['network_manager'].load_networks()
     return dispatch({"Implements": ["NetworkDriver"]})
 
 
