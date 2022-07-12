@@ -10,7 +10,7 @@
 # - pyc/pyo => 3 MB
 # - python:3.5 is 917MB ?!?, python:3.5-alpine is 75.3 MB
 
-FROM python:3.8-alpine
+FROM python:3.9.10-alpine
 
 WORKDIR /
 ENV CANUTILS_VERSION=2021.08.0
@@ -28,10 +28,10 @@ ADD dist/can4docker-*.whl \
     images/docker-plugin/pyroute2-0000-fix-vxcan-peer.patch \
     /
 
-RUN python -m pip install --upgrade pip && \
+RUN python -m pip install --upgrade pip gunicorn && \
     pip install gunicorn can4docker-*.whl && \
     \
-    (cd /usr/local/lib/python3.8/site-packages/pr2modules && \
+    (cd /usr/local/lib/python3.9/site-packages/pr2modules && \
       patch -p2 </pyroute2-0000-fix-vxcan-peer.patch) && \
     \
     rm -f can4docker-*.whl && \

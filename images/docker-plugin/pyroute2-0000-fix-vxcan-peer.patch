@@ -9,9 +9,9 @@
              'bridge': bridge_data,
              'bridge_slave': bridge_slave_data,
          }
---- a/pr2modules/netlink/rtnl/req.py      2022-02-24 13:33:51.272755861 -0700
-+++ b/pr2modules/netlink/rtnl/req.py      2022-02-24 13:41:40.032755900 -0700
-@@ -815,8 +815,8 @@ class IPLinkRequest(IPRequest):
+--- a/pr2modules/requests/link.py      2022-02-24 13:33:51.272755861 -0700
++++ b/pr2modules/requests/link.py      2022-02-24 13:41:40.032755900 -0700
+@@ -163,8 +163,8 @@ class LinkIPRouteFilter(IPRouteFilter):
              else:
                  self.info_data.append((self.specific[key], value))
              return True
