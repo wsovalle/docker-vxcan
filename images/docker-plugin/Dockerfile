@@ -20,7 +20,7 @@ RUN apk add --no-cache --virtual .build-deps libc-dev gcc linux-headers make pat
 
 RUN tar xzf v${CANUTILS_VERSION}.tar.gz && \
     cd can-utils-${CANUTILS_VERSION} && \
-    make && \
+    make -j4 && \
     make install
 
 ADD dist/can4docker-*.whl \
